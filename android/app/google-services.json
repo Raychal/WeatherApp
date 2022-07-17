@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "475635353712",
+    "project_id": "fir-login-8f6f3",
+    "storage_bucket": "fir-login-8f6f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475635353712:android:a3eb540eb9ce6821f3ccb5",
+        "android_client_info": {
+          "package_name": "com.raychal.weather_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475635353712-3i4s666gi223rrqr116hlhia0i2b6lm9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD81r8_vqiOL_CpH5BWrbFIvfAmk7fMu-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475635353712-3i4s666gi223rrqr116hlhia0i2b6lm9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
