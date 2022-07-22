@@ -1,21 +1,110 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:weather_app/services/database_services.dart';
+import 'package:weather_app/services/storage_services.dart';
 
-import '../constants/constants.dart';
 import '../model/user.dart';
 import '../widgets/widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({Key? key, required this.currentUserId, required this.visitedUserId}) : super(key: key);
+  const EditProfilePage({Key? key, required this.user, }) : super(key: key);
 
-  final String currentUserId;
-  final String visitedUserId;
+  final User user;
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+
+  String? _firstName;
+  String? _lastName;
+  String? _email;
+  String? _gender;
+  String? _about;
+  String? _bio;
+  int? _age;
+  File? _profileImage;
+  String? _imagePickedType;
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  displayProfileImage() {
+    if (_profileImage == null) {
+      if (widget.user.profilePicture.isEmpty) {
+        return AssetImage('assets/images/nameless.png');
+      } else {
+        return NetworkImage(widget.user.profilePicture);
+      }
+    } else {
+      return FileImage(_profileImage!);
+    }
+  }
+
+  saveProfile() async {
+    try {
+      _formKey.currentState!.save();
+      if (_formKey.currentState!.validate() && !_isLoading) {
+        setState(() {
+          _isLoading = true;
+        });
+        String profilePictureUrl = '';
+        if (_profileImage == null) {
+          profilePictureUrl = widget.user.profilePicture;
+        } else {
+          profilePictureUrl = await StorageService.uploadProfilePicture(
+              widget.user.profilePicture, _profileImage!);
+        }
+
+        User user = User(
+          id: widget.user.id,
+          firstName: _firstName!,
+          lastName: _lastName!,
+          email: _email!,
+          profilePicture: profilePictureUrl,
+          age: _age!,
+          gender: _gender!,
+          bio: _bio!,
+          about: _about!,
+        );
+
+        DatabaseServices.updateUserData(user);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  handleImageFromGallery() async {
+    try {
+      XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (imageFile != null) {
+        if (_imagePickedType == 'profile') {
+          setState(() {
+            _profileImage = imageFile as File?;
+          });
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    _firstName = widget.user.firstName;
+    _lastName = widget.user.lastName;
+    _email = widget.user.email;
+    _gender = widget.user.gender;
+    _age = widget.user.age;
+    _bio = widget.user.bio;
+    _about = widget.user.about;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,18 +123,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         elevation: 0,
       ),
       backgroundColor: Colors.white,
-      body: FutureBuilder(
-          future: usersRef.doc(widget.visitedUserId).get(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                ),
-              );
-            }
-            User user = User.fromDoc(snapshot.data);
-            return ListView(
+      body: ListView(
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               children: [
@@ -69,9 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               children: [
                                 CircleAvatar(
                                   radius: 60,
-                                  backgroundImage: user.profilePicture.isEmpty
-                                      ? AssetImage('assets/images/nameless.png') as ImageProvider
-                                      : NetworkImage(user.profilePicture),
+                                  backgroundImage: displayProfileImage(),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -85,7 +161,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           padding: EdgeInsets.all(8),
                                           color: Colors.blue[600],
                                           child: GestureDetector(
-                                            onTap: () {},
+                                            onTap: () {
+                                              _imagePickedType = 'profile';
+                                              handleImageFromGallery();
+                                            },
                                             child: Icon(
                                               Icons.add_a_photo,
                                               color: Colors.white,
@@ -102,64 +181,100 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ],
                       ),
                     ),
-                    Container(
+                    Form(
+                      key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 180),
                           TextFieldWidget(
                             label: 'First Name',
-                            text: user.firstName,
-                            onChanged: (firstName) {},
+                            text: _firstName!,
                             maxLines: 1,
+                            onSaved: (value) {
+                              _firstName = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                              ? 'Please enter valid name'
+                              : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'Last Name',
-                            text: user.lastName,
-                            onChanged: (lastName) {},
+                            text: _lastName!,
                             maxLines: 1,
+                            onSaved: (value) {
+                              _lastName = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                                ? 'Please enter valid name'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'Email',
-                            text: user.email,
-                            onChanged: (email) {},
+                            text: _email!,
                             maxLines: 1,
+                            onSaved: (value) {
+                              _email = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                                ? 'Please enter valid email'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'Jenis Kelamin',
-                            text: user.gender,
-                            onChanged: (gender) {},
+                            text: _gender!,
                             maxLines: 1,
+                            onSaved: (value) {
+                              _gender = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                                ? 'Please enter valid gender'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'Usia',
-                            text: user.age.toString(),
-                            onChanged: (age) {},
+                            text: _age!.toString(),
                             maxLines: 1,
+                            onSaved: (value) {
+                              _age = value as int?;
+                            },
+                            validator: (input) => input.toString().length < 1
+                                ? 'Please enter valid age'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'Bio',
-                            text: user.bio,
-                            onChanged: (bio) {},
+                            text: _bio!,
                             maxLines: 1,
+                            onSaved: (value) {
+                              _bio = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                                ? 'Please enter valid bio'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           TextFieldWidget(
                             label: 'About',
-                            text: user.about,
-                            onChanged: (about) {},
+                            text: _about!,
                             maxLines: 5,
+                            onSaved: (value) {
+                              _about = value;
+                            },
+                            validator: (input) => input.toString().length < 2
+                                ? 'Please enter valid about'
+                                : null,
                           ),
                           SizedBox(height: 10),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 25.0),
                             child: GestureDetector(
-                              onTap: () {},
+                              onTap: saveProfile,
                               child: Container(
                                 padding: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
@@ -186,9 +301,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ],
                 ),
               ],
-            );
-          }
-      ),
+            ),
     );
   }
 

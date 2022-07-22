@@ -75,9 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           onTap: () {
                                             Navigator.of(context).push(
                                               MaterialPageRoute(builder: (context) =>
-                                                  EditProfilePage(
-                                                    currentUserId: widget.currentUserId,
-                                                    visitedUserId: widget.visitedUserId,
+                                                  EditProfilePage(user: user,
                                                   )),
                                             );
                                           },

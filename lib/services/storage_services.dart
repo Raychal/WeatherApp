@@ -23,34 +23,6 @@ class StorageService {
     return downloadUrl;
   }
 
-  static Future<String> uploadCoverPicture(String url, File imageFile) async {
-    String? uniquePhotoId = Uuid().v4();
-    File? image = await compressImage(uniquePhotoId, imageFile);
-
-    if (url.isNotEmpty) {
-      RegExp exp = RegExp(r'userCover_(.*).jpg');
-      uniquePhotoId = exp.firstMatch(url)![1];
-    }
-    UploadTask uploadTask = storageRef
-        .child('images/users/userCover_$uniquePhotoId.jpg')
-        .putFile(image!);
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
-
-  static Future<String> uploadTweetPicture(File imageFile) async {
-    String uniquePhotoId = Uuid().v4();
-    File? image = await compressImage(uniquePhotoId, imageFile);
-
-    UploadTask uploadTask = storageRef
-        .child('images/tweets/tweet_$uniquePhotoId.jpg')
-        .putFile(image!);
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
-
   static Future<File?> compressImage(String photoId, File image) async {
     final tempDirection = await getTemporaryDirectory();
     final path = tempDirection.path;

@@ -7,13 +7,15 @@ class TextFieldWidget extends StatefulWidget {
     required this.maxLines,
     required this.label,
     required this.text,
-    required this.onChanged,
+    required this.onSaved,
+    required this.validator,
   }) : super(key: key);
 
   final int maxLines;
   final String label;
   final String text;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String> validator;
+  final ValueChanged<String> onSaved;
 
   @override
   State<TextFieldWidget> createState() => _TextFieldWidgetState();
@@ -21,21 +23,21 @@ class TextFieldWidget extends StatefulWidget {
 
 class _TextFieldWidgetState extends State<TextFieldWidget> {
 
-   TextEditingController? controller;
+   // TextEditingController? controller;
 
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   controller = TextEditingController(text: widget.text);
+  // }
 
-    controller = TextEditingController(text: widget.text);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    controller?.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //
+  //   controller?.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -48,8 +50,9 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         SizedBox(height: 8),
-        TextField(
-          controller: controller,
+        TextFormField(
+          initialValue: widget.text,
+          // controller: controller,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
