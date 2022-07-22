@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -33,39 +32,58 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future signUp() async {
+    // loading circle
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
 
     if (confirmPassword()) {
       // create user
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      // add user details
-      addUserDetails(
+      // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //   email: _emailController.text.trim(),
+      //   password: _passwordController.text.trim(),
+      // );
+      bool isValid = await AuthService.signUp(
           _firstNameController.text.trim(),
           _lastNameController.text.trim(),
-          _emailController.text.trim(),
           int.parse(_ageController.text.trim()),
+          _emailController.text.trim(),
+          _passwordController.text.trim()
       );
+      if (isValid) {
+        Navigator.of(context).pop();
+      } else {
+        print('something wrong');
+      }
+
+      // add user details
+      // addUserDetails(
+      //     _firstNameController.text.trim(),
+      //     _lastNameController.text.trim(),
+      //     _emailController.text.trim(),
+      //     int.parse(_ageController.text.trim()),
+      // );
     }
   }
 
-  Future addUserDetails(
-      String firstName,
-      String lastName,
-      String email,
-      int age
-      ) async {
-      User? user = FirebaseAuth.instance.currentUser;
-    await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
-      'uid': user?.uid,
-      'first name': firstName,
-      'last name': lastName,
-      'email': email,
-      'age': age,
-    });
-  }
+  // Future addUserDetails(
+  //     String firstName,
+  //     String lastName,
+  //     String email,
+  //     int age
+  //     ) async {
+  //     User? user = FirebaseAuth.instance.currentUser;
+  //   await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+  //     'uid': user?.uid,
+  //     'first name': firstName,
+  //     'last name': lastName,
+  //     'email': email,
+  //     'age': age,
+  //   });
+  // }
 
   bool confirmPassword() {
     if (_passwordController.text.trim() ==

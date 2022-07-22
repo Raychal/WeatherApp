@@ -4,3 +4,6 @@ export './sign_in_page.dart';
 export '../auth/main_page.dart';
 export './home_page.dart';
 export './forgot_pw_page.dart';
+export './favorite_page.dart';
+export './profile_page.dart';
+export './notif_page.dart';

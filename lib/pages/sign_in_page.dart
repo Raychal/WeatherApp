@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import './pages.dart';
+import '../services/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -17,10 +17,20 @@ class _SignInPageState extends State<SignInPage> {
   final _passwordController = TextEditingController();
 
   Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+    // loading circle
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
     );
+
+    bool isValid = await AuthService.login(_emailController.text.trim(), _passwordController.text.trim());
+    if (isValid) {
+      Navigator.of(context).pop();
+    } else {
+      print('login problem');
+    }
   }
 
   @override

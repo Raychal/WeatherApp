@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_app/auth/auth_page.dart';
 import 'package:weather_app/utils/app_styles.dart';
 import 'package:weather_app/utils/size_configs.dart';
+import '../main.dart';
 import '../model/onboard_data.dart';
-import './pages.dart';
 import '../widgets/widgets.dart';
 
 class OnBoardingPage extends StatefulWidget {
@@ -34,16 +34,16 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     );
 }
 
-  Future setSeenonboard() async {
+  Future setSeenOnboard() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     seenOnBoard = await pref.getBool('seenOnBoard') ?? true;
-    // this will set seenOnBoard to true when running onBorad page for first time.
+    // this will set seenOnBoard to true when running onBoard page for first time.
   }
 
   @override
   void initState() {
     super.initState();
-    setSeenonboard();
+    setSeenOnboard();
   }
 
   @override
