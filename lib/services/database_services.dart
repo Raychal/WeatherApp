@@ -2,8 +2,8 @@ import '../constants/constants.dart';
 import '../model/user.dart';
 
 class DatabaseServices {
-  static void updateUserData(User user) {
-    usersRef.doc(user.id).update({
+  static void updateUserData(UserModel user) async {
+    return await usersRef.doc(user.id).update({
       'first name': user.firstName,
       'last name': user.lastName,
       'bio': user.bio,

@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               );
             }
-            User user = User.fromDoc(snapshot.data);
+            UserModel user = UserModel.fromDoc(snapshot.data);
             return ListView(
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
@@ -154,7 +154,7 @@ Widget buildButton(BuildContext context, String value, String text) => MaterialB
     ),
   );
 
-Widget buildBio(User user) => Container(
+Widget buildBio(UserModel user) => Container(
   padding: EdgeInsets.symmetric(horizontal: 48.0),
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +172,7 @@ Widget buildBio(User user) => Container(
   ),
 );
 
-Widget buildAbout(User user) => Container(
+Widget buildAbout(UserModel user) => Container(
   padding: EdgeInsets.symmetric(horizontal: 48.0),
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +231,7 @@ class ClipPathClass extends CustomClipper<Path> {
 
 }
 
-Widget buildName(User user) => Column(
+Widget buildName(UserModel user) => Column(
   children: [
     Text(
       '${user.firstName} ${user.lastName}',

@@ -7,12 +7,11 @@ import 'package:weather_app/services/database_services.dart';
 import 'package:weather_app/services/storage_services.dart';
 
 import '../model/user.dart';
-import '../widgets/widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key, required this.user, }) : super(key: key);
 
-  final User user;
+  final UserModel user;
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -28,7 +27,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _bio;
   int? _age;
   File? _profileImage;
-  String? _imagePickedType;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
@@ -59,7 +57,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               widget.user.profilePicture, _profileImage!);
         }
 
-        User user = User(
+        UserModel user = UserModel(
           id: widget.user.id,
           firstName: _firstName!,
           lastName: _lastName!,
@@ -71,26 +69,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
           about: _about!,
         );
 
+        print(user.id.toString());
         DatabaseServices.updateUserData(user);
-        Navigator.pop(context);
+        Navigator.of(context).pop();
       }
     } catch (e) {
-      print(e);
+      print(e.toString());
     }
   }
 
   handleImageFromGallery() async {
     try {
-      XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      final imageFile = (await ImagePicker().pickImage(source: ImageSource.gallery));
       if (imageFile != null) {
-        if (_imagePickedType == 'profile') {
-          setState(() {
-            _profileImage = imageFile as File?;
-          });
-        }
+        print('msg ${imageFile.toString()}');
+        _profileImage = File(imageFile.path);
+        print('msg ${_profileImage}');
+        setState(() {});
       }
     } catch (e) {
-      print(e);
+      print(e.toString());
     }
   }
 
@@ -162,7 +160,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           color: Colors.blue[600],
                                           child: GestureDetector(
                                             onTap: () {
-                                              _imagePickedType = 'profile';
                                               handleImageFromGallery();
                                             },
                                             child: Icon(
@@ -183,119 +180,158 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     Form(
                       key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 180),
-                          TextFieldWidget(
-                            label: 'First Name',
-                            text: _firstName!,
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _firstName = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                              ? 'Please enter valid name'
-                              : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'Last Name',
-                            text: _lastName!,
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _lastName = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                                ? 'Please enter valid name'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'Email',
-                            text: _email!,
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _email = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                                ? 'Please enter valid email'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'Jenis Kelamin',
-                            text: _gender!,
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _gender = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                                ? 'Please enter valid gender'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'Usia',
-                            text: _age!.toString(),
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _age = value as int?;
-                            },
-                            validator: (input) => input.toString().length < 1
-                                ? 'Please enter valid age'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'Bio',
-                            text: _bio!,
-                            maxLines: 1,
-                            onSaved: (value) {
-                              _bio = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                                ? 'Please enter valid bio'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          TextFieldWidget(
-                            label: 'About',
-                            text: _about!,
-                            maxLines: 5,
-                            onSaved: (value) {
-                              _about = value;
-                            },
-                            validator: (input) => input.toString().length < 2
-                                ? 'Please enter valid about'
-                                : null,
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                            child: GestureDetector(
-                              onTap: saveProfile,
-                              child: Container(
-                                padding: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade600,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 180),
+                            TextFormField(
+                              initialValue: _firstName!,
+                              decoration: InputDecoration(
+                                labelText: 'First Name',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _firstName = value;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _lastName!,
+                              decoration: InputDecoration(
+                                labelText: 'Last Name',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _lastName = value;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _email!,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _email = value;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _gender!,
+                              decoration: InputDecoration(
+                                labelText: 'Gender',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _gender = value;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _age!.toString(),
+                              decoration: InputDecoration(
+                                labelText: 'Age',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 1
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _age = int.parse(value!);
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _bio!,
+                              decoration: InputDecoration(
+                                labelText: 'Bio',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _bio = value;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            TextFormField(
+                              initialValue: _about!,
+                              decoration: InputDecoration(
+                                labelText: 'About',
+                                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              validator: (input) => input!.trim().length < 2
+                                  ? 'please enter valid name'
+                                  : null,
+                              onSaved: (value) {
+                                _about = value;
+                              },
+                              maxLines: 5,
+                            ),
+                            SizedBox(height: 30),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                              child: GestureDetector(
+                                onTap: saveProfile,
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade600,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 20),
-                        ],
+                            SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -329,7 +365,7 @@ class ClipPathClass extends CustomClipper<Path> {
 
 }
 
-Widget buildName(User user) => Column(
+Widget buildName(UserModel user) => Column(
   children: [
     Text(
       '${user.firstName} ${user.lastName}',

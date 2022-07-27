@@ -1,8 +1,7 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class User {
+class UserModel {
+
   String id;
   String profilePicture;
   String firstName;
@@ -13,7 +12,7 @@ class User {
   String about;
   String bio;
 
-  User({
+  UserModel({
     required this.id,
     required this.profilePicture,
     required this.firstName,
@@ -25,11 +24,9 @@ class User {
     required this.bio
 });
 
-  factory User.fromDoc(DocumentSnapshot doc) {
-    return User(
-      id: doc.data().toString().contains('id')
-          ? doc.id
-          : 'Id key does no exist inside firebase document',
+  factory UserModel.fromDoc(DocumentSnapshot doc) {
+    return UserModel(
+      id: doc.id,
       profilePicture: doc.data().toString().contains('profilePicture')
           ? doc['profilePicture'] as String
           : 'profilePicture key does no exist inside firebase document',
