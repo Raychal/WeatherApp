@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/pages/pages.dart';
-import 'package:weather_app/pages/sign_in_page.dart';
+import '../screens/pages.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);

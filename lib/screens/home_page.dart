@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app/utils/emoticon_face.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'notif_page.dart';
+import '../constants/asset_path.dart';
+import 'pages.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                     children: <Widget>[
                       CircleAvatar(
                         radius: 32,
-                        backgroundImage: NetworkImage('https://www.pngitem.com/pimgs/m/575-5759580_anonymous-avatar-image-png-transparent-png.png'),
+                        backgroundImage: AssetImage(defaultPhoto),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -288,44 +288,55 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.cloud),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Weather',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Weather(),
+                                )
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.cloud),
+                                  SizedBox(
+                                    width: 12,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Weather',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16
+                                        ),
                                       ),
-                                    ),
 
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-
-                                    Text(
-                                      'Check current weather',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: Colors.grey
+                                      SizedBox(
+                                        height: 5,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Icon(Icons.more_horiz),
-                          ],
+
+                                      Text(
+                                        'Check current weather',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: Colors.grey
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Icon(Icons.more_horiz),
+                            ],
+                          ),
                         ),
                       ),
                     ],

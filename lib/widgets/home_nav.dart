@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import '../pages/pages.dart';
+
+import '../screens/pages.dart';
 
 class HomeNav extends StatefulWidget {
   final String currentUserId;

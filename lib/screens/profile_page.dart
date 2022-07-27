@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/pages/edit_profile_page.dart';
+import 'package:weather_app/screens/edit_profile_page.dart';
 import '../widgets/widgets.dart';
 import '../model/user.dart';
 import '../constants/constants.dart';

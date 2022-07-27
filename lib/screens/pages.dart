@@ -7,3 +7,4 @@ export './forgot_pw_page.dart';
 export './favorite_page.dart';
 export './profile_page.dart';
 export './notif_page.dart';
+export 'weather/weather_pages.dart';
